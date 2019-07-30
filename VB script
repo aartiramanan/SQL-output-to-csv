@@ -1,0 +1,47 @@
+Dim objConn objRS, objField
+Dim strQuery, ColNames, Records, Separator
+Dim fileName, tableName
+
+'Dim regEx
+'Set regEx = new RexExp
+'regEx.Pattern = "\r|\n|,|"""
+
+Set objConn = CreateObject("ADODB.Connection")
+objConn.Open "MS SQL Server db"
+
+strQuery = "select * from <table> where <finish_your_query_here> ;"
+set objRS = objConn.execute(strQuery)
+
+tableName = "<table>"
+fileName = tableName & "_Query_Output.csv"
+
+set fileSysObj = CreateObject("Scripting.FileSystemObject")
+set csvFile = fileSysObj.OpenTextFile("//<location_to_save_output_file>/"& fileName, 2, True)
+
+ColNames = ""
+for each obhField in objRS.Fields
+    ColNames = ColNames & objField.Name & ","
+next
+'xlFile.Write vbNewLine
+csvFile.WriteLine Left(ColNames, len(ColNames)-1)
+
+Do while not objRS.eof
+  ' Separator = ""
+  Records = ""
+  for i=0 to objRS.Fields.Count -1
+   ' Record = objRS.Fields(i).Value & ""
+   ' if regEx.Test(Column) then
+     Records = Records & Replace(objRD.Fields(i).Value, "", "") & ","
+   ' end if
+   ' xlFile.WriteLine Record & ";"
+   ' Separator = ","
+  next
+'xlFile.Write vbNewLine
+csvFile.WriteLine Left(Records, len(Records)-1)
+objRS.MoveNext
+loop
+
+objRS.Close
+Set objRS = nothing
+objConn.Close
+Set objConn = nothing
